@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Tokens de la aplicacion.
+   Los que empiezan por --cv- los escribe el panel de diseno en tiempo real
+   sobre la hoja; las plantillas solo leen ese contrato, nunca el store.
+   ========================================================================== */
+:root {
+  --shell-bg: #0c1220;
+  --shell-panel: #121a2b;
+  --shell-raised: #1a2436;
+  --shell-edge: #263149;
+  --shell-text: #e8ecf5;
+  --shell-muted: #8794ae;
+  --shell-accent: #e8a33d;
+  --shell-signal: #4c8dff;
+
+  color-scheme: dark;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  font-family: 'Public Sans', ui-sans-serif, sans-serif;
+  overscroll-behavior: none;
+}
+
+/* Barras de desplazamiento discretas, en el tono de la mesa. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3651;
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4a6d;
+  background-clip: content-box;
+  border: 3px solid transparent;
+}
+
+/* Foco visible siempre: es un editor, se navega mucho con teclado. */
+:focus-visible {
+  outline: 2px solid var(--shell-signal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   La mesa de luz: superficie de trabajo bajo la hoja.
+   ========================================================================== */
+.lighttable {
+  background-color: #080d17;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 50% 42%, rgba(232, 163, 61, 0.09), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.055) 1px, transparent 0);
+  background-size:
+    100% 100%,
+    22px 22px;
+}
+
+/* La hoja. Medidas reales de imprenta, no aproximaciones en pixeles. */
+.paper {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #16202e;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  font-family: var(--cv-font-body);
+  font-size: var(--cv-font-size);
+  line-height: var(--cv-line-height);
+  box-shadow:
+    0 40px 80px -24px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+
+  text-align: var(--cv-text-align);
+  -webkit-hyphens: var(--cv-hyphens);
+  hyphens: var(--cv-hyphens);
+  /* Sin esto, una URL larga en texto justificado se sale del margen. */
+  overflow-wrap: break-word;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Los titulos nunca se justifican: una sola linea con espacios estirados se
+   lee peor y no gana nada, porque la ultima linea siempre queda en bandera. */
+.paper h1,
+.paper h2,
+.paper h3 {
+  text-align: left;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
+.paper h1,
+.paper h2,
+.paper h3 {
+  font-family: var(--cv-font-heading);
+  margin: 0;
+}
+
+/* ==========================================================================
+   Edicion directa sobre la hoja.
+   Sin bordes hasta que el cursor se acerca: el documento manda, no el editor.
+   ========================================================================== */
+.editable {
+  outline: none;
+  border-radius: 3px;
+  transition:
+    background-color 0.14s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: text;
+  min-width: 1ch;
+}
+.editable:hover {
+  background-color: rgba(76, 141, 255, 0.09);
+  box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.09);
+}
+.editable:focus {
+  background-color: rgba(232, 163, 61, 0.14);
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.14);
+}
+.editable:empty::before {
+  content: attr(data-placeholder);
+  color: #a2adbd;
+  font-style: italic;
+}
+
+/* Aparicion escalonada de los bloques al cambiar de plantilla. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ==========================================================================
+   Impresion. Esta es la ruta de exportacion principal: el texto sale
+   vectorial y seleccionable, que es lo que leen los filtros ATS.
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  /*
+   * El editor vive dentro de una cadena de contenedores con altura fija y
+   * desplazamiento propio. Esa cadena es correcta en pantalla y es justo lo
+   * que impide paginar: un contenedor con altura de ventana y overflow no
+   * reparte su contenido en hojas, lo recorta en la primera.
+   *
+   * Aqui se desarma esa cadena para que la hoja vuelva al flujo normal del
+   * documento y el navegador la corte por si mismo.
+   */
+  html,
+  body,
+  #root {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  #root > div,
+  #root > div > div {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .lighttable {
+    display: block !important;
+    overflow: visible !important;
+    background: none !important;
+    flex: none !important;
+  }
+
+  .canvas-zoom {
+    display: block !important;
+    transform: none !important;
+    padding: 0 !important;
+  }
+
+  .paper-stack {
+    display: block !important;
+    position: static !important;
+    gap: 0 !important;
+  }
+
+  /*
+   * Sin esto el navegador descarta los fondos y los bordes de color al
+   * imprimir: es su ahorro de tinta por defecto. Era la causa de que la
+   * barra lateral y los bloques salieran en blanco.
+   */
+  .paper,
+  .paper * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .paper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    /* En pantalla recorta los fondos sangrados; al imprimir cortaria todo
+       lo que pase de la primera hoja. */
+    overflow: visible !important;
+    break-inside: auto;
+  }
+  .paper + .paper {
+    break-before: page;
+  }
+
+  /*
+   * El reparto en hojas lo decide el motor de paginacion en pantalla, que ya
+   * empuja cada bloque al area util. Dejar aqui reglas de corte propias
+   * (break-inside, orphans, widows) haria que el navegador desplazara el
+   * contenido por su cuenta y el PDF dejaria de coincidir con lo que se ve.
+   */
+  [data-block] {
+    break-inside: auto;
+  }
+
+  .editable:hover,
+  .editable:focus {
+    background: none !important;
+    box-shadow: none !important;
+  }
+}
