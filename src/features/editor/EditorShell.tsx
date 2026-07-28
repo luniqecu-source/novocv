@@ -4,6 +4,7 @@ import { Topbar } from './Topbar'
 import { SectionRail } from './SectionRail'
 import { Inspector } from './Inspector'
 import { ApiKeyModal } from './ApiKeyModal'
+import { PreviewModal } from './PreviewModal'
 import { Canvas } from '@/features/canvas/Canvas'
 import { Toaster } from '@/components/ui/Toaster'
 
@@ -20,6 +21,7 @@ export function EditorShell() {
         <Canvas />
       </div>
       <ApiKeyModal />
+      <PreviewModal />
       <Toaster />
     </div>
   )

@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, ContactText, Links, Photo, Section, blockLabel, contactEntries, visibleLinks } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Franjas: separadores de rayas finas entre secciones.
@@ -10,7 +11,7 @@ import type { TemplateProps } from './types'
  * se parte entre hojas sin perder nada: no hay fondo que dejar de pintar.
  */
 export default function FranjasTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -36,7 +37,7 @@ export default function FranjasTemplate({ data, design }: TemplateProps) {
       <header style={{ display: 'flex', gap: 'var(--cv-gap)', alignItems: 'flex-start', marginBottom: 'var(--cv-gap)' }}>
         <div style={{ flex: 1 }}>
           <Editable path="personal.fullName" as="h1" placeholder="Tu nombre"
-            style={{ fontSize: '3em', fontWeight: 200, letterSpacing: '-0.035em', lineHeight: 0.98 }} />
+            style={{ fontSize: 'calc(3em * var(--cv-name-scale, 1))', fontWeight: 200, letterSpacing: '-0.035em', lineHeight: 0.98 }} />
           <Editable path="personal.headline" placeholder="Cargo o especialidad"
             style={{ display: 'block', marginTop: 6, fontSize: '1.05em', color: 'var(--cv-accent)', letterSpacing: '0.1em', textTransform: 'uppercase' }} />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 16px', marginTop: 10, fontSize: '0.92em', opacity: 0.85 }}>
@@ -49,7 +50,8 @@ export default function FranjasTemplate({ data, design }: TemplateProps) {
         {design.showPhoto && <Photo personal={personal} design={design} />}
       </header>
 
-      <Section first id="perfil" label="Perfil">
+      <OrderedSections design={design} custom={custom}>
+<Section first id="perfil" label="Perfil">
         {titulo('Perfil')}
         <Editable path="summary" multiline placeholder="Resume tu aporte." style={{ display: 'block' }} />
       </Section>
@@ -116,7 +118,8 @@ export default function FranjasTemplate({ data, design }: TemplateProps) {
             ))}
           </div>
         </Section>
-      )}
+)}
+      </OrderedSections>
     </div>
   )
 }

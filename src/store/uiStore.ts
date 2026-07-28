@@ -18,6 +18,7 @@ export type PanelId =
   | 'herramientas'
   | 'competencias'
   | 'referencias'
+  | 'secciones'
   | 'paginas'
   | 'asistente'
 
@@ -64,6 +65,9 @@ interface UiStore {
   busy: string | null
   setBusy: (label: string | null) => void
 
+  previewOpen: boolean
+  setPreviewOpen: (open: boolean) => void
+
   pageCount: number
   setPageCount: (count: number) => void
 
@@ -103,6 +107,9 @@ export const useUi = create<UiStore>((set, get) => ({
 
   busy: null,
   setBusy: (busy) => set({ busy }),
+
+  previewOpen: false,
+  setPreviewOpen: (previewOpen) => set({ previewOpen }),
 
   pageCount: 1,
   setPageCount: (pageCount) => {

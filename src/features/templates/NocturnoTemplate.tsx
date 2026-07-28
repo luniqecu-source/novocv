@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, LevelBar, Links, Photo, Section, contactEntries, visibleLinks, blockLabel, ContactText } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Hoja completa en color oscuro, para perfiles de diseno y tecnologia.
@@ -9,7 +10,7 @@ import type { TemplateProps } from './types'
  * navegador, o el fondo saldra en blanco. El aviso vive en el panel de diseno.
  */
 export default function NocturnoTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -46,7 +47,7 @@ export default function NocturnoTemplate({ data, design }: TemplateProps) {
             path="personal.fullName"
             as="h1"
             placeholder="Tu nombre"
-            style={{ fontSize: '2.6em', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}
+            style={{ fontSize: 'calc(2.6em * var(--cv-name-scale, 1))', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}
           />
           <Editable
             path="personal.headline"
@@ -66,14 +67,17 @@ export default function NocturnoTemplate({ data, design }: TemplateProps) {
         </div>
       </header>
 
-      <Section id="perfil" label="Perfil">
+      <OrderedSections design={design} custom={custom} customIds={[]}>
+<Section id="perfil" label="Perfil">
         {label('Perfil')}
         <Editable path="summary" multiline placeholder="Describe tu enfoque de trabajo." style={{ display: 'block', opacity: 0.92 }} />
       </Section>
+</OrderedSections>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.9fr 1fr', gap: 'var(--cv-gap)', marginTop: 'var(--cv-gap)' }}>
         <div>
-          {experience.length > 0 && (
+          <OrderedSections design={design} custom={custom} customIds={[]}>
+{experience.length > 0 && (
             <Section first id="experiencia" label="Experiencia">
               {label('Experiencia')}
               {experience.map((item, i) => (
@@ -102,12 +106,14 @@ export default function NocturnoTemplate({ data, design }: TemplateProps) {
                 </article>
               ))}
             </Section>
-          )}
+)}
+          </OrderedSections>
         </div>
 
         <div>
+            <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
           {tools.length > 0 && (
-            <Section first id="herramientas" label="Stack">
+<Section first id="herramientas" label="Stack">
               {label('Stack')}
               {tools.map((tool, i) => (
                 <div key={tool.id} style={{ marginBottom: 8 }}>
@@ -148,7 +154,8 @@ export default function NocturnoTemplate({ data, design }: TemplateProps) {
                 </div>
               ))}
             </Section>
-          )}
+)}
+          </OrderedSections>
         </div>
       </div>
     </div>

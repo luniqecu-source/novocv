@@ -24,6 +24,10 @@ export const palettes: Palette[] = [
   { id: 'ciruela', name: 'Ciruela', primary: '#5B3A70', surface: '#2E1F3D', surfaceText: '#F7F1FA', accent: '#D9A441' },
   { id: 'arena', name: 'Arena', primary: '#7A5C3E', surface: '#EFE7DC', surfaceText: '#2B2117', accent: '#9C6644' },
   { id: 'acero', name: 'Acero', primary: '#33566E', surface: '#E8EDF2', surfaceText: '#1B2A38', accent: '#C2703D' },
+  { id: 'coral', name: 'Coral', primary: '#C64B3C', surface: '#D9534A', surfaceText: '#FFF3F0', accent: '#F2B705' },
+  { id: 'menta', name: 'Menta', primary: '#0F766E', surface: '#0B4F49', surfaceText: '#ECFFFB', accent: '#F97316' },
+  { id: 'violeta', name: 'Violeta', primary: '#6D28D9', surface: '#3B1D73', surfaceText: '#F5F0FF', accent: '#F59E0B' },
+  { id: 'noche', name: 'Noche', primary: '#F2B705', surface: '#1A1A2E', surfaceText: '#F4F4FB', accent: '#E94560' },
 ]
 
 export const headingFonts = ['Manrope', 'Montserrat', 'Playfair Display', 'IBM Plex Sans', 'Bricolage Grotesque', 'Lato']
@@ -54,6 +58,8 @@ export function designToCssVars(design: DesignSettings): CSSProperties {
     '--cv-font-body': `'${design.fontBody}', sans-serif`,
     '--cv-font-size': `${design.fontSize}pt`,
     '--cv-line-height': String(design.lineHeight),
+    '--cv-heading-scale': String(design.headingScale ?? 1),
+    '--cv-name-scale': String(design.nameScale ?? 1),
     '--cv-text-align': design.textAlign === 'justificado' ? 'justify' : 'left',
     // La particion de palabras solo se activa junto con la justificacion:
     // en texto en bandera no aporta nada y ensucia la lectura.

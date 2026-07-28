@@ -5,6 +5,7 @@ import {
   blockLabel, contactEntries, visibleLinks,
 } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Trama: retícula de puntos impresa sobre la banda lateral.
@@ -13,7 +14,7 @@ import type { TemplateProps } from './types'
  * pesa cero, escala a cualquier resolucion y se imprime nitido.
  */
 export default function TramaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -22,13 +23,14 @@ export default function TramaTemplate({ data, design }: TemplateProps) {
       <main style={{ padding: 'var(--cv-pad)' }}>
         <header style={{ marginBottom: 'var(--cv-gap)' }}>
           <Editable path="personal.fullName" as="h1" placeholder="Tu nombre"
-            style={{ fontSize: '2.6em', fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1 }} />
+            style={{ fontSize: 'calc(2.6em * var(--cv-name-scale, 1))', fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1 }} />
           <div style={{ height: 3, width: 54, background: 'var(--cv-accent)', margin: '10px 0' }} />
           <Editable path="personal.headline" placeholder="Cargo o especialidad"
             style={{ display: 'block', color: 'var(--cv-primary)', fontSize: '1.05em', letterSpacing: '0.16em', textTransform: 'uppercase' }} />
         </header>
 
-        <Section first id="perfil" label="Perfil">
+        <OrderedSections design={design} custom={custom} customIds={[]}>
+<Section first id="perfil" label="Perfil">
           <SectionTitle rule={false}>Perfil</SectionTitle>
           <Editable path="summary" multiline placeholder="Resume tu aporte." style={{ display: 'block' }} />
         </Section>
@@ -64,7 +66,8 @@ export default function TramaTemplate({ data, design }: TemplateProps) {
               </article>
             ))}
           </Section>
-        )}
+)}
+        </OrderedSections>
       </main>
 
       <aside
@@ -85,7 +88,8 @@ export default function TramaTemplate({ data, design }: TemplateProps) {
           </div>
         )}
 
-        <Section first id="contacto" label="Contacto">
+        <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
+<Section first id="contacto" label="Contacto">
           <SectionTitle tone="surface" rule={false}>Contacto</SectionTitle>
           <div style={{ background: 'var(--cv-surface)', padding: '2px 0' }}>
             {contacts.map((entry) => (
@@ -135,7 +139,8 @@ export default function TramaTemplate({ data, design }: TemplateProps) {
               </div>
             ))}
           </Section>
-        )}
+)}
+        </OrderedSections>
       </aside>
     </div>
   )

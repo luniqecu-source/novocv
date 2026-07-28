@@ -108,7 +108,9 @@ export function DisenoPanel() {
         </Select>
       </Field>
 
-      <Slider label="Tamaño del texto" unit=" pt" min={8} max={13} step={0.5} value={design.fontSize} onChange={(fontSize) => setDesign({ fontSize })} />
+      <Slider label="Tamaño del texto" unit=" pt" min={7} max={16} step={0.5} value={design.fontSize} onChange={(fontSize) => setDesign({ fontSize })} />
+      <Slider label="Tamaño del nombre" unit="×" min={0.7} max={1.6} step={0.05} value={design.nameScale ?? 1} onChange={(nameScale) => setDesign({ nameScale })} />
+      <Slider label="Tamaño de títulos" unit="×" min={0.7} max={1.6} step={0.05} value={design.headingScale ?? 1} onChange={(headingScale) => setDesign({ headingScale })} />
       <Slider label="Interlineado" min={1.2} max={1.8} step={0.05} value={design.lineHeight} onChange={(lineHeight) => setDesign({ lineHeight })} />
       <Slider label="Separación entre secciones" unit=" px" min={8} max={34} value={design.sectionGap} onChange={(sectionGap) => setDesign({ sectionGap })} />
 

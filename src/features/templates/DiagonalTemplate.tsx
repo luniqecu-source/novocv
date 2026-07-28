@@ -5,6 +5,7 @@ import {
   blockLabel, contactEntries, visibleLinks,
 } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Diagonal: encabezado cortado en angulo.
@@ -14,7 +15,7 @@ import type { TemplateProps } from './types'
  * lo unico que un lector agradece.
  */
 export default function DiagonalTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -48,7 +49,7 @@ export default function DiagonalTemplate({ data, design }: TemplateProps) {
           {design.showPhoto && <Photo personal={personal} design={design} />}
           <div style={{ flex: 1, minWidth: 0 }}>
             <Editable path="personal.fullName" as="h1" placeholder="Tu nombre"
-              style={{ fontSize: '2.5em', fontWeight: 800, lineHeight: 1.02, letterSpacing: '-0.02em' }} />
+              style={{ fontSize: 'calc(2.5em * var(--cv-name-scale, 1))', fontWeight: 800, lineHeight: 1.02, letterSpacing: '-0.02em' }} />
             <Editable path="personal.headline" placeholder="Cargo o especialidad"
               style={{ display: 'block', marginTop: 4, color: 'var(--cv-accent)', letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: '0.95em', fontWeight: 600 }} />
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 14px', marginTop: 9, fontSize: '0.92em' }}>
@@ -62,14 +63,17 @@ export default function DiagonalTemplate({ data, design }: TemplateProps) {
       </header>
 
       <div style={{ padding: '0 var(--cv-pad) var(--cv-pad)' }}>
-        <Section first id="perfil" label="Perfil">
+        <OrderedSections design={design} custom={custom} customIds={[]}>
+<Section first id="perfil" label="Perfil">
           <SectionTitle>Perfil</SectionTitle>
           <Editable path="summary" multiline placeholder="Resume tu aporte." style={{ display: 'block' }} />
         </Section>
+</OrderedSections>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.9fr 1fr', gap: 'var(--cv-gap)' }}>
           <div>
-            {experience.length > 0 && (
+            <OrderedSections design={design} custom={custom} customIds={[]}>
+{experience.length > 0 && (
               <Section id="experiencia" label="Experiencia">
                 <SectionTitle>Experiencia</SectionTitle>
                 {experience.map((item, i) => (
@@ -98,12 +102,14 @@ export default function DiagonalTemplate({ data, design }: TemplateProps) {
                   </article>
                 ))}
               </Section>
-            )}
+)}
+            </OrderedSections>
           </div>
 
           <div>
+              <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
             {skills.length > 0 && (
-              <Section id="competencias" label="Competencias">
+<Section id="competencias" label="Competencias">
                 <SectionTitle>Competencias</SectionTitle>
                 {skills.map((skill, i) => (
                   <div key={skill.id} data-line style={{ marginBottom: 5 }}>
@@ -138,7 +144,8 @@ export default function DiagonalTemplate({ data, design }: TemplateProps) {
                   </div>
                 ))}
               </Section>
-            )}
+)}
+            </OrderedSections>
           </div>
         </div>
       </div>

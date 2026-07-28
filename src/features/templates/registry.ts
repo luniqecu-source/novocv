@@ -10,6 +10,10 @@ import TramaTemplate from './TramaTemplate'
 import ReticulaTemplate from './ReticulaTemplate'
 import DiagonalTemplate from './DiagonalTemplate'
 import FranjasTemplate from './FranjasTemplate'
+import EsquinasTemplate from './EsquinasTemplate'
+import RecorteTemplate from './RecorteTemplate'
+import SenderoTemplate from './SenderoTemplate'
+import BloquesTemplate from './BloquesTemplate'
 import type { TemplateMeta } from './types'
 
 /**
@@ -103,6 +107,34 @@ export const templates: TemplateMeta[] = [
     description: 'Separadores de rayas finas, casi monocroma. Se parte entre hojas sin perder nada.',
     swatch: ['#FFFFFF', '#3D4451'],
     component: FranjasTemplate,
+  },
+  {
+    id: 'esquinas',
+    name: 'Esquinas',
+    description: 'Banda lateral con triángulos de color. Enérgica y muy visual.',
+    swatch: ['#12263A', '#E0A458'],
+    component: EsquinasTemplate,
+  },
+  {
+    id: 'recorte',
+    name: 'Recorte',
+    description: 'Cabecera en bloque con la foto biselada. Moderna y con carácter.',
+    swatch: ['#8C2F39', '#F2B705'],
+    component: RecorteTemplate,
+  },
+  {
+    id: 'sendero',
+    name: 'Sendero',
+    description: 'Banda de color y línea de tiempo de puntos. Trayectoria clara de un vistazo.',
+    swatch: ['#C64B3C', '#1B2A38'],
+    component: SenderoTemplate,
+  },
+  {
+    id: 'bloques',
+    name: 'Bloques',
+    description: 'Cada sección es una tarjeta. El orden se lee al instante; ideal para reordenar.',
+    swatch: ['#0F766E', '#F97316'],
+    component: BloquesTemplate,
   },
 ]
 

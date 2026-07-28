@@ -24,7 +24,7 @@ export function SectionTitle({
     <h2
       style={{
         color,
-        fontSize: '1.02em',
+        fontSize: 'calc(1.02em * var(--cv-heading-scale, 1))',
         fontWeight: 700,
         letterSpacing: '0.09em',
         textTransform: 'uppercase',

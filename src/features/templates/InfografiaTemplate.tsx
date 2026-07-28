@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, Chip, LevelRing, Links, Photo, Section, SectionTitle, contactEntries, visibleLinks, blockLabel, ContactText } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Version visual: cifras grandes arriba, anillos para las cuatro competencias
@@ -12,7 +13,7 @@ import type { TemplateProps } from './types'
  * infografica termine mintiendo sobre su propio contenido.
  */
 export default function InfografiaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -31,7 +32,7 @@ export default function InfografiaTemplate({ data, design }: TemplateProps) {
       <header style={{ display: 'flex', gap: 'var(--cv-gap)', alignItems: 'center' }}>
         {design.showPhoto && <Photo personal={personal} design={design} />}
         <div style={{ flex: 1 }}>
-          <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: '2.25em', fontWeight: 800, lineHeight: 1.03 }} />
+          <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: 'calc(2.25em * var(--cv-name-scale, 1))', fontWeight: 800, lineHeight: 1.03 }} />
           <Editable
             path="personal.headline"
             placeholder="Cargo o especialidad"
@@ -75,7 +76,8 @@ export default function InfografiaTemplate({ data, design }: TemplateProps) {
         ))}
       </div>
 
-      <Section first id="competencias" label="Competencias">
+      <OrderedSections design={design} custom={custom}>
+<Section first id="perfil" label="Perfil">
         <SectionTitle>Perfil</SectionTitle>
         <Editable path="summary" multiline placeholder="Resume tu trayectoria." style={{ display: 'block' }} />
       </Section>
@@ -175,7 +177,8 @@ export default function InfografiaTemplate({ data, design }: TemplateProps) {
             ))}
           </div>
         </Section>
-      )}
+)}
+      </OrderedSections>
     </div>
   )
 }

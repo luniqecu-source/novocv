@@ -2,10 +2,11 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, Chip, LevelDots, Links, Photo, Section, SectionTitle, contactEntries, visibleLinks, blockLabel } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /** Franja superior ancha. Gana espacio horizontal para hojas con mucho texto. */
 export default function BandaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -27,7 +28,7 @@ export default function BandaTemplate({ data, design }: TemplateProps) {
             path="personal.fullName"
             as="h1"
             placeholder="Tu nombre"
-            style={{ fontSize: '2.3em', lineHeight: 1.03, fontWeight: 800 }}
+            style={{ fontSize: 'calc(2.3em * var(--cv-name-scale, 1))', lineHeight: 1.03, fontWeight: 800 }}
           />
           <Editable
             path="personal.headline"
@@ -55,14 +56,17 @@ export default function BandaTemplate({ data, design }: TemplateProps) {
       </header>
 
       <div style={{ padding: 'var(--cv-pad)' }}>
-        <Section first id="perfil" label="Perfil">
+        <OrderedSections design={design} custom={custom} customIds={[]}>
+<Section first id="perfil" label="Perfil">
           <SectionTitle>Perfil profesional</SectionTitle>
           <Editable path="summary" multiline placeholder="Resume tu aporte en dos o tres frases." />
         </Section>
+</OrderedSections>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.85fr 1fr', gap: 'var(--cv-gap)' }}>
           <div>
-            {experience.length > 0 && (
+            <OrderedSections design={design} custom={custom} customIds={[]}>
+{experience.length > 0 && (
               <Section id="experiencia" label="Experiencia">
                 <SectionTitle>Experiencia</SectionTitle>
                 {experience.map((item, i) => (
@@ -92,12 +96,14 @@ export default function BandaTemplate({ data, design }: TemplateProps) {
                   </article>
                 ))}
               </Section>
-            )}
+)}
+            </OrderedSections>
           </div>
 
           <div>
+              <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
             {skills.length > 0 && (
-              <Section id="competencias" label="Competencias">
+<Section id="competencias" label="Competencias">
                 <SectionTitle>Competencias</SectionTitle>
                 {skills.map((skill, i) => (
                   <div key={skill.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 6, marginBottom: 5, alignItems: 'center' }}>
@@ -132,7 +138,9 @@ export default function BandaTemplate({ data, design }: TemplateProps) {
                   </div>
                 ))}
               </Section>
-            )}
+)}
+
+            </OrderedSections>
           </div>
         </div>
       </div>

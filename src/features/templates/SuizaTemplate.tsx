@@ -33,7 +33,7 @@ export default function SuizaTemplate({ data, design }: TemplateProps) {
           path="personal.fullName"
           as="h1"
           placeholder="Tu nombre"
-          style={{ fontSize: '3.1em', fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 0.95 }}
+          style={{ fontSize: 'calc(3.1em * var(--cv-name-scale, 1))', fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 0.95 }}
         />
         <div style={{ ...row, alignItems: 'baseline', borderTop: '2px solid var(--cv-primary)', marginTop: 'var(--cv-gap-sm)' }}>
           <MarginLabel>Perfil</MarginLabel>

@@ -66,6 +66,18 @@ export interface ReferenceItem {
   phone: string
 }
 
+export type CustomKind = 'lista' | 'texto'
+
+export interface CustomSection {
+  id: Id
+  kind: CustomKind
+  title: string
+  /** Usado si kind === 'texto'. */
+  body: string
+  /** Usado si kind === 'lista'. */
+  items: string[]
+}
+
 export interface CvData {
   personal: Personal
   summary: string
@@ -74,6 +86,7 @@ export interface CvData {
   skills: LeveledItem[]
   tools: LeveledItem[]
   references: ReferenceItem[]
+  custom: CustomSection[]
 }
 
 export type Density = 'compacta' | 'normal' | 'amplia'
@@ -98,6 +111,10 @@ export interface DesignSettings {
   fontBody: string
   fontSize: number
   lineHeight: number
+  /** Multiplicador del tamano de los titulos de seccion (1 = normal). */
+  headingScale: number
+  /** Multiplicador del tamano del nombre en la cabecera (1 = normal). */
+  nameScale: number
   sectionGap: number
   density: Density
   textAlign: TextAlign
@@ -114,6 +131,14 @@ export interface DesignSettings {
    * usan el id del propio elemento.
    */
   blocks: Record<string, BlockSetting>
+  /**
+   * Orden de las secciones, por clave. Las plantillas recorren esta lista en
+   * vez de tener el orden escrito, asi que reordenar es reordenar el arreglo.
+   * Las claves ausentes se anaden al final con su orden natural.
+   */
+  sectionOrder: string[]
+  /** Secciones ocultas, por clave. Mas simple que un booleano por seccion. */
+  hiddenSections: string[]
   showPhoto: boolean
   showDocumentId: boolean
   showLicense: boolean
@@ -133,4 +158,4 @@ export interface CvDocument {
   design: DesignSettings
 }
 
-export const DOC_VERSION = 4
+export const DOC_VERSION = 5

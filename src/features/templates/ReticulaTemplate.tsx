@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, ContactText, Links, Photo, Section, blockLabel, contactEntries, visibleLinks } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Reticula: secciones numeradas sobre una malla modular visible.
@@ -10,7 +11,7 @@ import type { TemplateProps } from './types'
  * documento, que es exactamente lo que hace un revisor al ojear una hoja.
  */
 export default function ReticulaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -40,13 +41,14 @@ export default function ReticulaTemplate({ data, design }: TemplateProps) {
         {design.showPhoto && <Photo personal={personal} design={design} />}
         <div style={{ flex: 1 }}>
           <Editable path="personal.fullName" as="h1" placeholder="Tu nombre"
-            style={{ fontSize: '2.5em', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1 }} />
+            style={{ fontSize: 'calc(2.5em * var(--cv-name-scale, 1))', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1 }} />
           <Editable path="personal.headline" placeholder="Cargo o especialidad"
             style={{ display: 'block', marginTop: 4, color: 'var(--cv-primary)', letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: '0.95em' }} />
         </div>
       </header>
 
-      <Section first id="contacto" label="Contacto">
+      <OrderedSections design={design} custom={custom}>
+<Section first id="contacto" label="Contacto">
         {numero('01', 'Contacto')}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px 16px', fontSize: '0.94em' }}>
           {contacts.map((entry) => (
@@ -129,7 +131,8 @@ export default function ReticulaTemplate({ data, design }: TemplateProps) {
             ))}
           </div>
         </Section>
-      )}
+)}
+      </OrderedSections>
     </div>
   )
 }

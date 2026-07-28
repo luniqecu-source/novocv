@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, Chip, LevelBar, Links, Photo, Section, SectionTitle, contactEntries, visibleLinks, blockLabel, ContactText } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Linea de tiempo continua. La numeracion visual aqui si aporta informacion:
@@ -9,7 +10,7 @@ import type { TemplateProps } from './types'
  * revisa el documento.
  */
 export default function CronologiaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -18,7 +19,7 @@ export default function CronologiaTemplate({ data, design }: TemplateProps) {
       <header style={{ display: 'flex', gap: 'var(--cv-gap)', alignItems: 'center', marginBottom: 'var(--cv-gap)' }}>
         {design.showPhoto && <Photo personal={personal} design={design} />}
         <div style={{ flex: 1 }}>
-          <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: '2.2em', fontWeight: 800, lineHeight: 1.05 }} />
+          <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: 'calc(2.2em * var(--cv-name-scale, 1))', fontWeight: 800, lineHeight: 1.05 }} />
           <Editable
             path="personal.headline"
             placeholder="Cargo o especialidad"
@@ -48,7 +49,8 @@ export default function CronologiaTemplate({ data, design }: TemplateProps) {
         <Editable path="summary" multiline placeholder="Resume tu trayectoria." style={{ display: 'block' }} />
       </div>
 
-      <Section first id="experiencia" label="Trayectoria">
+      <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
+<Section first id="experiencia" label="Trayectoria">
         <SectionTitle>Trayectoria</SectionTitle>
         <div style={{ position: 'relative', paddingLeft: 22 }}>
           <span style={{ position: 'absolute', left: 5, top: 6, bottom: 6, width: 2, background: 'var(--cv-primary-line)' }} />
@@ -103,6 +105,7 @@ export default function CronologiaTemplate({ data, design }: TemplateProps) {
           ))}
         </div>
       </Section>
+</OrderedSections>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--cv-gap)' }}>
         {skills.length > 0 && (

@@ -10,6 +10,7 @@ import {
   Users,
   Sparkles,
   FileStack,
+  LayoutList,
 } from 'lucide-react'
 import { useUi, type PanelId } from '@/store/uiStore'
 import { cn } from '@/lib/cn'
@@ -24,6 +25,7 @@ const items: { id: PanelId; label: string; icon: typeof Palette }[] = [
   { id: 'herramientas', label: 'Herramientas', icon: Wrench },
   { id: 'competencias', label: 'Competencias', icon: Gauge },
   { id: 'referencias', label: 'Referencias', icon: Users },
+  { id: 'secciones', label: 'Secciones', icon: LayoutList },
   { id: 'paginas', label: 'Páginas', icon: FileStack },
   { id: 'asistente', label: 'Asistente', icon: Sparkles },
 ]

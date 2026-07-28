@@ -9,6 +9,8 @@ import type {
   LeveledItem,
   ReferenceItem,
   ReferenceKind,
+  CustomKind,
+  CustomSection,
 } from '@/types/cv'
 import { defaultDocument } from '@/data/defaultCv'
 import { loadDocument, saveDocument, clearDocument } from '@/lib/storage'
@@ -48,6 +50,11 @@ export interface CvStore {
   addEducation: () => void
   addLeveled: (list: 'skills' | 'tools') => void
   addReference: (kind: ReferenceKind) => void
+  addCustomSection: (kind: CustomKind) => void
+  removeCustomSection: (id: string) => void
+  addCustomItem: (sectionId: string) => void
+  moveSection: (key: string, direction: -1 | 1) => void
+  toggleSectionHidden: (key: string) => void
   addLink: () => void
   removeLink: (id: string) => void
   removeFrom: (list: ListKey, id: string) => void
@@ -173,6 +180,56 @@ export const useCv = create<CvStore>((set, get) => {
           phone: '',
         }
         draft.data.references.push(item)
+      }),
+
+    addCustomSection: (kind) =>
+      get().edit((draft) => {
+        const section: CustomSection = {
+          id: uid('cs'),
+          kind,
+          title: kind === 'lista' ? 'Nueva sección' : 'Nueva sección',
+          body: '',
+          items: kind === 'lista' ? [''] : [],
+        }
+        draft.data.custom.push(section)
+        // Aparece al final del orden; el usuario la sube desde el gestor.
+        draft.design.sectionOrder.push(`custom:${section.id}`)
+      }),
+
+    removeCustomSection: (id) =>
+      get().edit((draft) => {
+        draft.data.custom = draft.data.custom.filter((section) => section.id !== id)
+        const key = `custom:${id}`
+        draft.design.sectionOrder = draft.design.sectionOrder.filter((k) => k !== key)
+        draft.design.hiddenSections = draft.design.hiddenSections.filter((k) => k !== key)
+      }),
+
+    addCustomItem: (sectionId) =>
+      get().edit((draft) => {
+        const section = draft.data.custom.find((entry) => entry.id === sectionId)
+        if (section) section.items.push('')
+      }),
+
+    moveSection: (key, direction) =>
+      get().edit((draft) => {
+        // El arreglo puede no incluir todas las claves (una plantilla nueva
+        // trae secciones aun no ordenadas). Se completa antes de mover para
+        // que el indice sea fiable.
+        const order = draft.design.sectionOrder
+        if (!order.includes(key)) order.push(key)
+        const from = order.indexOf(key)
+        const to = from + direction
+        if (to < 0 || to >= order.length) return
+        const [moved] = order.splice(from, 1)
+        order.splice(to, 0, moved)
+      }),
+
+    toggleSectionHidden: (key) =>
+      get().edit((draft) => {
+        const hidden = draft.design.hiddenSections
+        const index = hidden.indexOf(key)
+        if (index >= 0) hidden.splice(index, 1)
+        else hidden.push(key)
       }),
 
     addLink: () =>

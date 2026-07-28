@@ -2,10 +2,11 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, ContactRow, LevelBar, Links, Photo, Section, SectionTitle, contactEntries, visibleLinks, blockLabel } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /** Barra lateral en color solido. El formato mas legible para filtros ATS. */
 export default function ColumnaTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
   const personales = references.filter((r) => r.kind === 'personal')
@@ -26,7 +27,8 @@ export default function ColumnaTemplate({ data, design }: TemplateProps) {
           </div>
         )}
 
-        <Section first id="contacto" label="Contacto">
+        <OrderedSections design={design} custom={custom} customIds={[]}>
+<Section first id="contacto" label="Contacto">
           <SectionTitle tone="surface">Contacto</SectionTitle>
           {contacts.map((entry) => (
             <ContactRow
@@ -90,7 +92,8 @@ export default function ColumnaTemplate({ data, design }: TemplateProps) {
               )
             })}
           </Section>
-        )}
+)}
+        </OrderedSections>
       </aside>
 
       <main style={{ padding: 'var(--cv-pad)' }}>
@@ -99,7 +102,7 @@ export default function ColumnaTemplate({ data, design }: TemplateProps) {
             path="personal.fullName"
             as="h1"
             placeholder="Tu nombre"
-            style={{ fontSize: '2.15em', lineHeight: 1.05, fontWeight: 800, color: 'var(--cv-surface)' }}
+            style={{ fontSize: 'calc(2.15em * var(--cv-name-scale, 1))', lineHeight: 1.05, fontWeight: 800, color: 'var(--cv-surface)' }}
           />
           <Editable
             path="personal.headline"
@@ -116,7 +119,8 @@ export default function ColumnaTemplate({ data, design }: TemplateProps) {
           />
         </header>
 
-        <Section first id="perfil" label="Perfil">
+        <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
+<Section first id="perfil" label="Perfil">
           <SectionTitle>Perfil profesional</SectionTitle>
           <Editable path="summary" multiline placeholder="Dos o tres frases sobre lo que haces y el resultado que dejas." />
         </Section>
@@ -178,7 +182,8 @@ export default function ColumnaTemplate({ data, design }: TemplateProps) {
               })}
             </div>
           </Section>
-        )}
+)}
+        </OrderedSections>
       </main>
     </div>
   )

@@ -7,6 +7,7 @@ import { ExperienciaPanel } from '@/features/panels/ExperienciaPanel'
 import { EducacionPanel } from '@/features/panels/EducacionPanel'
 import { NivelPanel } from '@/features/panels/NivelPanel'
 import { ReferenciasPanel } from '@/features/panels/ReferenciasPanel'
+import { SeccionesPanel } from '@/features/panels/SeccionesPanel'
 import { PaginasPanel } from '@/features/panels/PaginasPanel'
 import { AsistentePanel } from '@/features/panels/AsistentePanel'
 
@@ -28,6 +29,7 @@ export function Inspector() {
       {panel === 'herramientas' && <NivelPanel list="tools" />}
       {panel === 'competencias' && <NivelPanel list="skills" />}
       {panel === 'referencias' && <ReferenciasPanel />}
+      {panel === 'secciones' && <SeccionesPanel />}
       {panel === 'paginas' && <PaginasPanel />}
       {panel === 'asistente' && <AsistentePanel />}
     </aside>

@@ -2,13 +2,14 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, Links, Section, SectionTitle, contactEntries, visibleLinks, blockLabel, ContactText, Photo } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Sin bloques de color ni graficos. Tipografia y espacio hacen todo el trabajo.
  * Es la version que mejor sobrevive a la lectura automatica y a la fotocopia.
  */
 export default function SobrioTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references, custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -24,7 +25,7 @@ export default function SobrioTemplate({ data, design }: TemplateProps) {
           path="personal.fullName"
           as="h1"
           placeholder="Tu nombre"
-          style={{ fontSize: '2.4em', fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1.1 }}
+          style={{ fontSize: 'calc(2.4em * var(--cv-name-scale, 1))', fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1.1 }}
         />
         <Editable
           path="personal.headline"
@@ -53,7 +54,8 @@ export default function SobrioTemplate({ data, design }: TemplateProps) {
         )}
       </header>
 
-      <Section id="experiencia" label="Experiencia">
+      <OrderedSections design={design} custom={custom}>
+<Section id="perfil" label="Perfil">
         <SectionTitle rule={false}>Perfil</SectionTitle>
         <Editable path="summary" multiline placeholder="Escribe tu resumen profesional." />
       </Section>
@@ -128,7 +130,8 @@ export default function SobrioTemplate({ data, design }: TemplateProps) {
             ))}
           </div>
         </Section>
-      )}
+)}
+      </OrderedSections>
     </div>
   )
 }

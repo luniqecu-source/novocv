@@ -2,6 +2,7 @@ import { Editable } from '@/features/canvas/Editable'
 import { dateRange } from '@/lib/format'
 import { Bullets, Chip, LevelBar, Links, Photo, Section, SectionTitle, contactEntries, visibleLinks, blockLabel } from './parts'
 import type { TemplateProps } from './types'
+import { OrderedSections } from './OrderedSections'
 
 /**
  * Tarjetas blancas superpuestas sobre una banda de color a media hoja.
@@ -9,7 +10,7 @@ import type { TemplateProps } from './types'
  * sensacion de capas sin recurrir a transparencias, que al imprimir se pierden.
  */
 export default function VidrioTemplate({ data, design }: TemplateProps) {
-  const { personal, experience, education, skills, tools, references } = data
+  const { personal, experience, education, skills, tools, references , custom } = data
   const contacts = contactEntries(personal, design)
   const links = visibleLinks(personal, design)
 
@@ -39,7 +40,7 @@ export default function VidrioTemplate({ data, design }: TemplateProps) {
         <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--cv-gap)', color: 'var(--cv-surface-text)', marginBottom: 'var(--cv-gap)' }}>
           {design.showPhoto && <Photo personal={personal} design={design} />}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: '2.3em', fontWeight: 800, lineHeight: 1.02 }} />
+            <Editable path="personal.fullName" as="h1" placeholder="Tu nombre" style={{ fontSize: 'calc(2.3em * var(--cv-name-scale, 1))', fontWeight: 800, lineHeight: 1.02 }} />
             <Editable
               path="personal.headline"
               placeholder="Cargo o especialidad"
@@ -70,7 +71,8 @@ export default function VidrioTemplate({ data, design }: TemplateProps) {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr', gap: 'var(--cv-gap)', alignItems: 'start' }}>
           <div style={card}>
-            {experience.length > 0 && (
+            <OrderedSections design={design} custom={custom} customIds={[]}>
+{experience.length > 0 && (
               <Section first id="experiencia" label="Experiencia">
                 <SectionTitle rule={false}>Experiencia</SectionTitle>
                 {experience.map((item, i) => (
@@ -99,12 +101,14 @@ export default function VidrioTemplate({ data, design }: TemplateProps) {
                   </article>
                 ))}
               </Section>
-            )}
+)}
+            </OrderedSections>
           </div>
 
           <div style={card}>
+              <OrderedSections design={design} custom={custom} customIds={custom.map((c) => c.id)}>
             {skills.length > 0 && (
-              <Section first id="competencias" label="Competencias">
+<Section first id="competencias" label="Competencias">
                 <SectionTitle rule={false}>Competencias</SectionTitle>
                 {skills.map((skill, i) => (
                   <div key={skill.id} style={{ marginBottom: 7 }}>
@@ -139,7 +143,8 @@ export default function VidrioTemplate({ data, design }: TemplateProps) {
                   </div>
                 ))}
               </Section>
-            )}
+)}
+            </OrderedSections>
           </div>
         </div>
       </div>

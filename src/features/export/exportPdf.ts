@@ -1,83 +1,121 @@
 /**
- * Exportacion a PDF.
+ * Exportacion a PDF sin dependencias externas.
  *
- * Hay dos rutas y el orden importa:
+ * El problema de las vias anteriores:
+ * - window.print() sobre la app imprimia toda la interfaz (modal, barra
+ *   lateral, fondo oscuro), porque imprime lo que hay en pantalla.
+ * - html2canvas + jsPDF requieren instalar librerias que no siempre estan
+ *   presentes; si faltan, el boton no hacia nada.
  *
- * 1. Impresion del navegador (recomendada). El texto sale vectorial y
- *    seleccionable, que es la condicion para que un filtro ATS pueda leer el
- *    documento. Ademas pesa poco y no depende de ninguna libreria.
- * 2. Rasterizado con html2canvas + jsPDF. Convierte la hoja en imagen. No es
- *    legible por maquina, pero conserva los fondos partidos entre hojas, que
- *    es justo lo que la impresion no puede garantizar.
+ * Esta via abre una ventana nueva que contiene UNICAMENTE la hoja y sus
+ * estilos, y lanza la impresion sobre ella. El navegador muestra su dialogo
+ * "Guardar como PDF" con una sola cosa dentro: el CV en A4, con texto
+ * seleccionable. No depende de ninguna libreria ni del estado del editor.
  */
 
-export function printToPdf(): void {
-  window.print()
-}
-
-export interface RasterOptions {
-  filename?: string
-  /** Multiplicador de resolucion. 2 basta para imprimir; 3 pesa mucho mas. */
-  scale?: number
-}
-
-const MM_WIDTH = 210
-const MM_HEIGHT = 297
-
-export async function rasterToPdf({ filename = 'hoja-de-vida.pdf', scale = 2 }: RasterOptions = {}): Promise<void> {
+/**
+ * Abre la hoja aislada en una ventana e invoca la impresion del navegador.
+ *
+ * Se copian los estilos de la pagina (hojas de estilo y <style> en linea) para
+ * que la hoja se vea igual que en el editor. La ventana se cierra sola tras
+ * imprimir.
+ */
+export function exportSheetToPdf(): void {
   const paper = document.querySelector<HTMLElement>('.paper')
   if (!paper) throw new Error('No se encontró la hoja para exportar.')
 
-  // Carga diferida: son cientos de kilobytes que solo hacen falta por esta via.
-  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-    import('html2canvas'),
-    import('jspdf'),
-  ])
-
-  const source = await html2canvas(paper, {
-    scale,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false,
-    // El lienzo esta escalado por el zoom; sin fijar el tamano, html2canvas
-    // captura a la escala visible y la imagen sale borrosa o recortada.
-    width: paper.offsetWidth,
-    height: paper.offsetHeight,
-    windowWidth: paper.offsetWidth,
-    windowHeight: paper.offsetHeight,
-    scrollX: 0,
-    scrollY: 0,
-  })
-
-  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true })
-
-  // Altura de una hoja A4 medida en pixeles de la imagen capturada.
-  const pageHeightPx = Math.floor((source.width * MM_HEIGHT) / MM_WIDTH)
-  const pages = Math.max(1, Math.ceil(source.height / pageHeightPx - 0.02))
-
-  /*
-   * Se recorta una porcion por hoja en vez de repetir la imagen completa
-   * desplazada. Repetirla obliga al PDF a cargar la imagen entera tantas veces
-   * como paginas, y cualquier redondeo desplaza el contenido medio milimetro
-   * en cada corte.
-   */
-  const slice = document.createElement('canvas')
-  const context = slice.getContext('2d')
-  if (!context) throw new Error('El navegador no permitió preparar la imagen.')
-
-  for (let page = 0; page < pages; page++) {
-    const top = page * pageHeightPx
-    const height = Math.min(pageHeightPx, source.height - top)
-
-    slice.width = source.width
-    slice.height = pageHeightPx
-    context.fillStyle = '#ffffff'
-    context.fillRect(0, 0, slice.width, slice.height)
-    context.drawImage(source, 0, top, source.width, height, 0, 0, source.width, height)
-
-    if (page > 0) pdf.addPage()
-    pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, MM_WIDTH, MM_HEIGHT)
+  const win = window.open('', '_blank', 'width=900,height=1200')
+  if (!win) {
+    throw new Error('El navegador bloqueó la ventana. Permite las ventanas emergentes para este sitio y vuelve a intentar.')
   }
 
-  pdf.save(filename)
+  // Reunir todos los estilos del documento actual: <style> en linea y <link>
+  // a hojas externas. Copiarlos asegura que la hoja se vea idéntica.
+  const styleTags = Array.from(document.querySelectorAll('style'))
+    .map((tag) => `<style>${tag.innerHTML}</style>`)
+    .join('\n')
+  const linkTags = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+    .map((link) => `<link rel="stylesheet" href="${(link as HTMLLinkElement).href}">`)
+    .join('\n')
+
+  // Copiar las variables de tema definidas en la propia hoja (color, fuentes,
+  // tamanos), que viven como estilo en linea del elemento .paper.
+  const paperInlineStyle = paper.getAttribute('style') ?? ''
+
+  win.document.open()
+  win.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Hoja de vida</title>
+  ${linkTags}
+  ${styleTags}
+  <style>
+    /* La ventana solo contiene la hoja: sin margenes de pagina ni fondos. */
+    @page { size: A4; margin: 0; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    /* La hoja a tamano real; su contenido ya sabe paginarse por bloques. */
+    .print-root {
+      width: 210mm;
+    }
+    .print-root .paper {
+      box-shadow: none !important;
+      margin: 0 !important;
+      width: 210mm !important;
+      overflow: visible !important;
+    }
+    /* Los colores de fondo deben salir. */
+    .print-root .paper,
+    .print-root .paper * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="print-root">
+    <article class="paper" style="${escapeAttr(paperInlineStyle)}">
+      ${paper.innerHTML}
+    </article>
+  </div>
+  <script>
+    // Esperar a que fuentes e imagenes carguen antes de imprimir, o el
+    // dialogo aparece con la hoja a medio dibujar.
+    (function () {
+      function done() {
+        setTimeout(function () {
+          window.focus();
+          window.print();
+        }, 120);
+      }
+      window.addEventListener('afterprint', function () { window.close(); });
+      var imgs = Array.prototype.slice.call(document.images);
+      var pending = imgs.filter(function (i) { return !i.complete; }).length;
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () { if (pending === 0) done(); });
+      }
+      if (pending === 0) { done(); return; }
+      imgs.forEach(function (img) {
+        if (img.complete) return;
+        img.addEventListener('load', check);
+        img.addEventListener('error', check);
+      });
+      function check() { pending -= 1; if (pending <= 0) done(); }
+    })();
+  </script>
+</body>
+</html>`)
+  win.document.close()
 }
+
+function escapeAttr(value: string): string {
+  return value.replace(/"/g, '&quot;')
+}
+
+// Nombres compatibles con el resto del codigo.
+export const printToPdf = exportSheetToPdf
+export const rasterToPdf = async (): Promise<void> => exportSheetToPdf()

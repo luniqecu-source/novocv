@@ -74,6 +74,10 @@ src/
 | Retícula | Secciones numeradas sobre malla modular. Ordenada y muy legible. |
 | Diagonal | Encabezado cortado en ángulo. La más gráfica del conjunto. |
 | Franjas | Separadores de rayas finas, casi monocroma. Se parte entre hojas sin perder nada. |
+| Esquinas | Banda lateral con triángulos de color. Enérgica y muy visual. |
+| Recorte | Cabecera en bloque con la foto biselada. Moderna y con carácter. |
+| Sendero | Banda de color y línea de tiempo de puntos. |
+| Bloques | Cada sección es una tarjeta. El orden se lee al instante. |
 
 Los patrones de Trama, Retícula y Franjas se generan con gradientes CSS repetidos, no con imágenes: pesan cero, escalan a cualquier resolución y se imprimen nítidos. La diagonal usa `clip-path` sobre una capa de fondo, así que el texto sigue en horizontal.
 
@@ -222,6 +226,24 @@ Las peticiones que esperan datos estructurados usan `responseMimeType: applicati
 Toda la aplicación habla con la IA a través de `ask()` en `features/ai/client.ts`. Migrar de Anthropic a Gemini fue reescribir ese archivo y ajustar las cadenas de `prompts.ts`: ningún panel, plantilla ni store cambió. Si algún día quieres volver o probar otro proveedor, ese es el único archivo que se toca.
 
 ---
+
+## Secciones y orden
+
+El panel **Secciones** (en el riel) controla qué aparece y en qué orden:
+
+- **Reordenar** con las flechas de cada fila. El orden vive en `design.sectionOrder`, así que es un ajuste de diseño: se aplica al instante y sobrevive a cambiar de plantilla. Las claves (`perfil`, `experiencia`, `formacion`, `competencias`, `herramientas`, `referencias`) son estables entre plantillas.
+- **Ocultar** con el ojo. Se guarda en `design.hiddenSections`; oculta la sección sin borrar su contenido.
+- **Añadir secciones propias**, de lista (viñetas) o de texto libre. Se editan sobre la hoja como cualquier otra, se reordenan y se borran.
+
+El mecanismo es `features/templates/OrderedSections.tsx`. Cada plantilla envuelve sus `<Section>` en él; el componente aplica orden y visibilidad e intercala las secciones personalizadas, dejando intactos los elementos que no son secciones (cabeceras, divisores). En las plantillas de dos columnas, cada columna se envuelve por separado con su propio `customIds`, de modo que ningún bloque salta de lado.
+
+Para las secciones personalizadas, el sistema de rutas entiende la forma `custom:ID.campo` y la traduce a la posición real dentro del arreglo, así que la vista no depende del orden del arreglo y sobrevive a que se reordenen o borren otras.
+
+**Cobertura:** el reordenamiento funciona en 15 de las 16 plantillas. Suiza usa una retícula de `<div>` en vez de `<Section>` y queda fuera por ahora; Cronología lo tiene parcial (la experiencia queda fija, coherente con una línea de tiempo).
+
+## Vista previa
+
+El botón **Vista previa y PDF** de la barra abre un visor a pantalla completa con la hoja a tamaño real —lo que saldrá en el PDF— y, a la izquierda, el reordenamiento de secciones in situ. Monta la misma plantilla con el mismo estado, así que la vista no puede mentir. Desde ahí se imprime a PDF o se exporta como imagen.
 
 ## Campos visibles
 

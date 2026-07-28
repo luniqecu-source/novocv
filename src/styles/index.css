@@ -183,13 +183,15 @@ body {
   }
 
   /*
-   * El editor vive dentro de una cadena de contenedores con altura fija y
-   * desplazamiento propio. Esa cadena es correcta en pantalla y es justo lo
-   * que impide paginar: un contenedor con altura de ventana y overflow no
-   * reparte su contenido en hojas, lo recorta en la primera.
+   * El editor vive dentro de contenedores con altura fija y desplazamiento
+   * propio. Esa cadena es correcta en pantalla pero impide paginar: un
+   * contenedor con altura de ventana y overflow recorta el contenido en la
+   * primera hoja en vez de repartirlo. Aqui se desarma para que la hoja vuelva
+   * al flujo normal y el navegador la corte por si mismo.
    *
-   * Aqui se desarma esa cadena para que la hoja vuelva al flujo normal del
-   * documento y el navegador la corte por si mismo.
+   * Al imprimir siempre se oculta el modal de vista previa (.no-print) y se
+   * imprime el LIENZO, que es lo que guardaba bien el PDF. El modal solo sirve
+   * para revisar y reordenar en pantalla; la impresion va por el lienzo.
    */
   html,
   body,
@@ -231,11 +233,7 @@ body {
     gap: 0 !important;
   }
 
-  /*
-   * Sin esto el navegador descarta los fondos y los bordes de color al
-   * imprimir: es su ahorro de tinta por defecto. Era la causa de que la
-   * barra lateral y los bloques salieran en blanco.
-   */
+  /* Los fondos de color deben salir; por defecto el navegador los descarta. */
   .paper,
   .paper * {
     -webkit-print-color-adjust: exact !important;
@@ -245,8 +243,6 @@ body {
   .paper {
     box-shadow: none !important;
     margin: 0 !important;
-    /* En pantalla recorta los fondos sangrados; al imprimir cortaria todo
-       lo que pase de la primera hoja. */
     overflow: visible !important;
     break-inside: auto;
   }
@@ -254,12 +250,6 @@ body {
     break-before: page;
   }
 
-  /*
-   * El reparto en hojas lo decide el motor de paginacion en pantalla, que ya
-   * empuja cada bloque al area util. Dejar aqui reglas de corte propias
-   * (break-inside, orphans, widows) haria que el navegador desplazara el
-   * contenido por su cuenta y el PDF dejaria de coincidir con lo que se ve.
-   */
   [data-block] {
     break-inside: auto;
   }

@@ -76,6 +76,18 @@ export const defaultDocument = (): CvDocument => ({
       { id: uid('tl'), name: 'Power BI', level: 75 },
       { id: uid('tl'), name: 'SAP MM', level: 60 },
     ],
+    custom: [
+      {
+        id: uid('cs'),
+        kind: 'lista',
+        title: 'Logros profesionales',
+        body: '',
+        items: [
+          'Premio al mejor proyecto de mejora continua 2023.',
+          'Certificación Lean Six Sigma Green Belt.',
+        ],
+      },
+    ],
     references: [
       {
         id: uid('rf'),
@@ -96,7 +108,7 @@ export const defaultDocument = (): CvDocument => ({
     ],
   },
   design: {
-    templateId: 'columna',
+    templateId: 'esquinas',
     primary: '#1F5F8B',
     surface: '#12263A',
     surfaceText: '#F4F7FB',
@@ -112,6 +124,8 @@ export const defaultDocument = (): CvDocument => ({
     pageMargin: 12,
     keepBlocks: true,
     blocks: {},
+    sectionOrder: ['perfil', 'experiencia', 'educacion', 'herramientas', 'competencias', 'referencias'],
+    hiddenSections: [],
     showPhoto: true,
     showDocumentId: true,
     showLicense: true,
