@@ -19,11 +19,17 @@ export const defaultDocument = (): CvDocument => ({
       birthDate: '1994',
       photo: null,
       links: [
-        { id: uid('ln'), label: 'LinkedIn', url: 'linkedin.com/in/vocampo' },
+        {
+          id: uid('ln'),
+          label: 'LinkedIn',
+          url: 'linkedin.com/in/vocampo',
+        },
       ],
     },
+
     summary:
       'Analista con seis años coordinando cadenas de abastecimiento en retail y manufactura. Reduje el costo por envío un 18 % rediseñando rutas y renegociando con transportistas. Trabajo cómoda entre el dato y el andén: escribo las consultas y también camino la bodega.',
+
     experience: [
       {
         id: uid('ex'),
@@ -53,6 +59,7 @@ export const defaultDocument = (): CvDocument => ({
         ],
       },
     ],
+
     education: [
       {
         id: uid('ed'),
@@ -64,18 +71,21 @@ export const defaultDocument = (): CvDocument => ({
         note: 'Tesis sobre optimización de rutas de última milla.',
       },
     ],
+
     skills: [
       { id: uid('sk'), name: 'Análisis de datos', level: 90 },
       { id: uid('sk'), name: 'Negociación con proveedores', level: 80 },
       { id: uid('sk'), name: 'Liderazgo de equipo', level: 75 },
       { id: uid('sk'), name: 'Inglés B2', level: 65 },
     ],
+
     tools: [
       { id: uid('tl'), name: 'Excel avanzado', level: 95 },
       { id: uid('tl'), name: 'SQL', level: 80 },
       { id: uid('tl'), name: 'Power BI', level: 75 },
       { id: uid('tl'), name: 'SAP MM', level: 60 },
     ],
+
     custom: [
       {
         id: uid('cs'),
@@ -88,6 +98,7 @@ export const defaultDocument = (): CvDocument => ({
         ],
       },
     ],
+
     references: [
       {
         id: uid('rf'),
@@ -107,25 +118,46 @@ export const defaultDocument = (): CvDocument => ({
       },
     ],
   },
+
   design: {
     templateId: 'esquinas',
+
     primary: '#1F5F8B',
     surface: '#12263A',
     surfaceText: '#F4F7FB',
     accent: '#E0A458',
+
     fontHeading: 'Manrope',
     fontBody: 'Public Sans',
+
     fontSize: 10.5,
     lineHeight: 1.45,
+
+    headingScale: 1,
+    nameScale: 1,
+
     sectionGap: 18,
+
     density: 'normal',
     textAlign: 'justificado',
+
     hyphenate: true,
     pageMargin: 12,
     keepBlocks: true,
+
     blocks: {},
-    sectionOrder: ['perfil', 'experiencia', 'educacion', 'herramientas', 'competencias', 'referencias'],
+
+    sectionOrder: [
+      'perfil',
+      'experiencia',
+      'educacion',
+      'herramientas',
+      'competencias',
+      'referencias',
+    ],
+
     hiddenSections: [],
+
     showPhoto: true,
     showDocumentId: true,
     showLicense: true,
@@ -133,6 +165,7 @@ export const defaultDocument = (): CvDocument => ({
     showLinks: true,
     showSkillLevels: false,
     showToolLevels: true,
+
     photoSize: 108,
     photoRadius: 999,
     photoBorder: 3,
